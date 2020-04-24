@@ -26,26 +26,22 @@ app.use(express.static("public"));
 console.log("hellos");
 
 mongoose.connect("mongodb://localhost:27017/blogdb", {
-  useNewUrlParser: true
-
+  useNewUrlParser: true,
 });
-
 
 const blogSchema = {
   title: String,
-  content: String
-}
+  content: String,
+};
 
 const Blogpost = mongoose.model("blogpost", blogSchema);
 
 const post_1 = new Blogpost({
   title: "day-1",
-  content: "hello, world"
-})
-
+  content: "hello, world",
+});
 
 let defaults = [post_1];
-
 
 app.get("/", function (req, res) {
   Blogpost.find({}, function (err, foundItems) {
@@ -55,15 +51,14 @@ app.get("/", function (req, res) {
           console.log("inserted sucessfully");
           res.redirect("/");
         }
-      })
+      });
     } else {
       res.render("home", {
         startingContent: homeStartingContent,
         posts: foundItems,
       });
     }
-  })
-
+  });
 });
 
 app.get("/about", function (req, res) {
@@ -83,7 +78,6 @@ app.get("/compose", function (req, res) {
 });
 
 app.post("/compose", function (req, res) {
-
   const post = new Blogpost({
     title: req.body.postTitle,
     content: req.body.postBody,
@@ -94,13 +88,10 @@ app.post("/compose", function (req, res) {
       res.redirect("/");
     }
   });
-
-
 });
 
 app.get("/posts/:postName", function (req, res) {
   const requestedTitle = _.lowerCase(req.params.postName);
-
 
   Blogpost.find({}, function (err, foundItems) {
     foundItems.forEach(function (post) {
@@ -111,13 +102,15 @@ app.get("/posts/:postName", function (req, res) {
           content: post.content,
         });
       }
-    })
-
-
-
+    });
   });
 });
 
-app.listen(3000, function () {
+let port = process.env.PORT;
+if (port == null || port == "") {
+  port = 3000;
+}
+
+app.listen(port, function () {
   console.log("Server started on port 3000");
 });
